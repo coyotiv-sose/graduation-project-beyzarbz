@@ -55,3 +55,6 @@ console.log(
 console.log(
   `Task status: ${branchTask.status}, Priority: ${branchTask.priority}, Assigned to: ${branchTask.assignedTo}.`
 )
+console.log(
+  `Task details: ${branchTask.title} - ${branchTask.description}, Start Time: ${branchTask.startTime}, End Time: ${branchTask.endTime}.`
+)

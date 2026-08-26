@@ -12,6 +12,7 @@ console.log('Gastro Ops')
 // I need to be able to create Tasks.
 //Which information should my Task carry ?
 //I need to be able to assign a Task to a User.
+//An Employee should be able to complete an assigned Task.
 
 const branch = {
   name: 'Kennys Vienna',
@@ -37,6 +38,13 @@ const kevin = {
   role: 'employee',
   branch: branch,
   tasks: [],
+
+  completeTask(selectedTask) {
+    if(selectedTask.assignedTo === this)
+      {
+    selectedTask.status = 'completed'
+      }
+  },
 }
 
 // I need to be able to create Tasks.
@@ -51,7 +59,12 @@ const branchTask = {
   branch: branch,
   createdBy: beyza,
 }
+
 beyza.assignTask(branchTask, kevin)
+
+
+
+kevin.completeTask(branchTask)
 
 console.log(`${beyza.name} works as ${beyza.role} at ${beyza.branch.name}.`)
 
@@ -68,4 +81,9 @@ console.log(
 )
 console.log(
   `Task details: ${branchTask.title} - ${branchTask.description}, Start Time: ${branchTask.startTime}, End Time: ${branchTask.endTime}.`
+)
+
+console.log(
+  `Status of ${branchTask.title}: ${branchTask.status}. Assigned to: ${branchTask.assignedTo.name}.
+  `
 )

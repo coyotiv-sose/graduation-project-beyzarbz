@@ -21,69 +21,93 @@ const branch = {
 
 console.log(`The branch name is ${branch.name} and its address is ${branch.address}.`)
 
-const beyza = {
-  name: 'Beyza',
-  role: 'branchManager',
-  branch: branch,
-  tasks: [],
+class User {
+  constructor(name, role, branch) {
+    this.name = name
+    this.role = role
+    this.branch = branch
+    this.tasks = []
+  }
 
   assignTask(selectedTask, selectedUser) {
-    selectedTask.assignedTo = selectedUser
-    selectedUser.tasks.push(selectedTask)
-  },
-}
-
-const kevin = {
-  name: 'Kevin',
-  role: 'employee',
-  branch: branch,
-  tasks: [],
+    if (this.role === 'branchManager') {
+      selectedTask.assignedTo = selectedUser
+      selectedUser.tasks.push(selectedTask)
+    }
+  }
 
   completeTask(selectedTask) {
-    if(selectedTask.assignedTo === this)
-      {
-    selectedTask.status = 'completed'
-      }
-  },
+    if (selectedTask.assignedTo === this) {
+      selectedTask.status = 'completed'
+    }
+  }
 }
 
-// I need to be able to create Tasks.
-const branchTask = {
-  title: 'Kitchen Check',
-  description: 'Check the kitchen for cleanliness and organization.',
-  startTime: '08:00',
-  endTime: '09:00',
-  priority: 'high',
-  status: 'pending',
-  assignedTo: null,
-  branch: branch,
-  createdBy: beyza,
+class Task {
+  constructor(title, description, startTime, endTime, priority, branch, createdBy) {
+    this.title = title
+    this.description = description
+    this.startTime = startTime
+    this.endTime = endTime
+    this.priority = priority
+    this.branch = branch
+    this.createdBy = createdBy
+
+    this.status = 'pending'
+    this.assignedTo = null
+  }
 }
+
+const beyza = new User('Beyza', 'branchManager', branch)
+const kevin = new User('Kevin', 'employee', branch)
+
+// I need to be able to create Tasks.
+
+const branchTask = new Task(
+  'Kitchen Check',
+  'Check the kitchen for cleanliness and organization.',
+  '08:00',
+  '09:00',
+  'high',
+  branch,
+  beyza
+)
+const branchTask2 = new Task(
+  'Inventory Check',
+  'Check the inventory for stock levels and expiration dates.',
+  '09:00',
+  '10:00',
+  'medium',
+  branch,
+  kevin
+)
 
 beyza.assignTask(branchTask, kevin)
 
+if (branchTask.assignedTo === null) {
+  console.log('The task is not assigned to any user.')
+} else {
+  console.log(`${branchTask.assignedTo.name} is the assigned user of the task.`)
+}
+console.log(branchTask.status === 'pending')
+console.log(`${branchTask.assignedTo.name} is the assigned user of the task.`)
+console.log(branchTask instanceof Task)
 
+console.log(branchTask.status === 'pending')
+console.log(branchTask instanceof Task)
 
 kevin.completeTask(branchTask)
 
-console.log(`${beyza.name} works as ${beyza.role} at ${beyza.branch.name}.`)
+if (branchTask.status === 'completed') {
+  console.log('The task has been completed.')
+} else {
+  console.log('The task is still pending.')
+}
+console.log(branchTask.assignedTo === kevin)
+console.log(branchTask instanceof Task)
 
-console.log(`${kevin.name} works as ${kevin.role} at ${kevin.branch.name} and has ${kevin.tasks.length} tasks.`)
+kevin.assignTask(branchTask2, beyza) // This should not work since Kevin is not a branchManager
 
-console.log(`${branchTask.title} assigned to ${branchTask.assignedTo.name}.`)
-
-console.log(
-  `${branchTask.title} was created by ${branchTask.createdBy.name} for ${branchTask.branch.name} and is currently ${branchTask.status}.`
-)
-
-console.log(
-  `Task status: ${branchTask.status}, Priority: ${branchTask.priority}, Assigned to: ${branchTask.assignedTo.name}.`
-)
-console.log(
-  `Task details: ${branchTask.title} - ${branchTask.description}, Start Time: ${branchTask.startTime}, End Time: ${branchTask.endTime}.`
-)
-
-console.log(
-  `Status of ${branchTask.title}: ${branchTask.status}. Assigned to: ${branchTask.assignedTo.name}.
-  `
-)
+console.log(branchTask.status === 'pending')
+console.log(branchTask.assignedTo === beyza)
+console.log(branchTask instanceof Task)

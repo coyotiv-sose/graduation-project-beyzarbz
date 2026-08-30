@@ -14,14 +14,15 @@ console.log('Gastro Ops')
 //I need to be able to assign a Task to a User.
 //An Employee should be able to complete an assigned Task.
 
-const branch = {
-  name: 'Kennys Vienna',
-  address: 'Vienna, Austria',
-  tasks: [],
+class Branch {
+  constructor(name, address) {
+    this.name = name
+    this.address = address
+    this.tasks = []
+    this.users = []
+  }
 }
-
-console.log(branch.tasks.length === 0)
-console.log(`The branch name is ${branch.name} and its address is ${branch.address}.`)
+const branch = new Branch('Kennys Vienna', 'Vienna Austria')
 
 class User {
   constructor(name, role, branch) {
@@ -29,6 +30,17 @@ class User {
     this.role = role
     this.branch = branch
     this.tasks = []
+  }
+
+  createUser(name, role, branch) {
+    if (this.role === 'admin') {
+      const newUser = new User(name, role, branch)
+      branch.users.push(newUser)
+      return newUser
+    } else {
+      console.log('You do not have permission to create a user.')
+      return null
+    }
   }
 
   createTask(title, description, startTime, endTime, priority, selectedBranch) {
@@ -67,6 +79,11 @@ class User {
   }
 }
 
+const admin = new User('Admin', 'admin', null)
+
+const beyza = admin.createUser('Beyza', 'branchManager', branch)
+const kevin = admin.createUser('Kevin', 'employee', branch)
+
 class Task {
   constructor(title, description, startTime, endTime, priority, branch, createdBy) {
     this.title = title
@@ -82,40 +99,23 @@ class Task {
   }
 }
 
-const admin = new User('Admin', 'admin', null)
-const beyza = new User('Beyza', 'branchManager', branch)
-const kevin = new User('Kevin', 'employee', branch)
-
-console.log(admin instanceof User)
-console.log(admin.role === 'admin')
-console.log(admin.branch === null)
 // I need to be able to create Tasks.
 
-const branchTask = new Task(
+const branchTask = beyza.createTask(
   'Kitchen Check',
   'Check the kitchen for cleanliness and organization.',
   '08:00',
   '09:00',
   'high',
-  branch,
-  beyza
+  branch
 )
-const branchTask2 = new Task(
+
+const branchTask2 = admin.createTask(
   'Inventory Check',
   'Check the inventory for stock levels and expiration dates.',
   '09:00',
   '10:00',
   'medium',
-  branch,
-  admin
-)
-
-admin.createTask(
-  'Staff Meeting',
-  'Hold a staff meeting to discuss upcoming events and tasks.',
-  '10:00',
-  '11:00',
-  'high',
   branch
 )
 
@@ -124,23 +124,23 @@ console.log(
   branch.tasks.map(task => task.title)
 )
 
-beyza.createTask(
-  'Inventory Check',
-  'Check the inventory for stock levels and expiration dates.',
-  '09:00',
-  '10:00',
-  'medium',
-  branch
-)
+//Assigning tasks to users
+beyza.assignTask(branchTask, kevin)
+admin.assignTask(branchTask2, beyza)
+kevin.assignTask(branchTask, beyza)
+kevin.completeTask(branchTask)
 
-console.log(
-  'Branch tasks after Beyza created a task:',
-  branch.tasks.map(task => task.title)
-)
+console.log(branch.users.length === 2)
+console.log(branch.users.includes(beyza))
+console.log(branch.users.includes(kevin))
 
-kevin.createTask('Clean Tables', 'Clean all tables in the dining area.', '11:00', '12:00', 'low', branch)
+console.log(branch.tasks.length === 2)
+console.log(branch.tasks.includes(branchTask))
+console.log(branch.tasks.includes(branchTask2))
 
-console.log(
-  'Branch tasks after Kevin tried to create a task:',
-  branch.tasks.map(task => task.title)
-)
+console.log(branchTask.assignedTo === kevin)
+console.log(kevin.tasks.includes(branchTask))
+console.log(branchTask.status === 'completed')
+
+console.log(branchTask2.assignedTo === beyza)
+console.log(beyza.tasks.includes(branchTask2))

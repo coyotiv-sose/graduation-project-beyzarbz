@@ -17,8 +17,10 @@ console.log('Gastro Ops')
 const branch = {
   name: 'Kennys Vienna',
   address: 'Vienna, Austria',
+  tasks: [],
 }
 
+console.log(branch.tasks.length === 0)
 console.log(`The branch name is ${branch.name} and its address is ${branch.address}.`)
 
 class User {
@@ -29,10 +31,32 @@ class User {
     this.tasks = []
   }
 
+  createTask(title, description, startTime, endTime, priority, selectedBranch) {
+    if (this.role === 'admin' || (this.role === 'branchManager' && this.branch === selectedBranch)) {
+      const newTask = new Task(title, description, startTime, endTime, priority, selectedBranch, this) //new Task instance is created with the provided parameters and the current user as the creator
+      selectedBranch.tasks.push(newTask) //The new task is added to the tasks array of the selected branch
+      return newTask //The newly created task is returned
+    } else {
+      console.log('You do not have permission to create a task for this branch.')
+      return null
+    }
+  }
+
   assignTask(selectedTask, selectedUser) {
-    if (this.role === 'branchManager') {
+    if (this.role === 'admin') {
       selectedTask.assignedTo = selectedUser
       selectedUser.tasks.push(selectedTask)
+    }
+    if (this.role === 'branchManager') {
+      if (selectedUser.role === 'employee' || selectedUser.role === 'branchManager') {
+        selectedTask.assignedTo = selectedUser
+        selectedUser.tasks.push(selectedTask)
+      } else {
+        console.log('You do not have permission to assign tasks to this user.')
+      }
+    }
+    if (this.role === 'employee') {
+      console.log('You do not have permission to assign tasks to this user.')
     }
   }
 
@@ -58,9 +82,13 @@ class Task {
   }
 }
 
+const admin = new User('Admin', 'admin', null)
 const beyza = new User('Beyza', 'branchManager', branch)
 const kevin = new User('Kevin', 'employee', branch)
 
+console.log(admin instanceof User)
+console.log(admin.role === 'admin')
+console.log(admin.branch === null)
 // I need to be able to create Tasks.
 
 const branchTask = new Task(
@@ -79,35 +107,40 @@ const branchTask2 = new Task(
   '10:00',
   'medium',
   branch,
-  kevin
+  admin
 )
 
-beyza.assignTask(branchTask, kevin)
+admin.createTask(
+  'Staff Meeting',
+  'Hold a staff meeting to discuss upcoming events and tasks.',
+  '10:00',
+  '11:00',
+  'high',
+  branch
+)
 
-if (branchTask.assignedTo === null) {
-  console.log('The task is not assigned to any user.')
-} else {
-  console.log(`${branchTask.assignedTo.name} is the assigned user of the task.`)
-}
-console.log(branchTask.status === 'pending')
-console.log(`${branchTask.assignedTo.name} is the assigned user of the task.`)
-console.log(branchTask instanceof Task)
+console.log(
+  'Branch tasks:',
+  branch.tasks.map(task => task.title)
+)
 
-console.log(branchTask.status === 'pending')
-console.log(branchTask instanceof Task)
+beyza.createTask(
+  'Inventory Check',
+  'Check the inventory for stock levels and expiration dates.',
+  '09:00',
+  '10:00',
+  'medium',
+  branch
+)
 
-kevin.completeTask(branchTask)
+console.log(
+  'Branch tasks after Beyza created a task:',
+  branch.tasks.map(task => task.title)
+)
 
-if (branchTask.status === 'completed') {
-  console.log('The task has been completed.')
-} else {
-  console.log('The task is still pending.')
-}
-console.log(branchTask.assignedTo === kevin)
-console.log(branchTask instanceof Task)
+kevin.createTask('Clean Tables', 'Clean all tables in the dining area.', '11:00', '12:00', 'low', branch)
 
-kevin.assignTask(branchTask2, beyza) // This should not work since Kevin is not a branchManager
-
-console.log(branchTask.status === 'pending')
-console.log(branchTask.assignedTo === beyza)
-console.log(branchTask instanceof Task)
+console.log(
+  'Branch tasks after Kevin tried to create a task:',
+  branch.tasks.map(task => task.title)
+)

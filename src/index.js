@@ -29,7 +29,10 @@ class User {
     this.name = name
     this.role = role
     this.branch = branch
+    this.availableBranches = []
     this.tasks = []
+    this.availabilities = []
+    this.absences = []
   }
 
   createUser(name, role, branch) {
@@ -55,27 +58,66 @@ class User {
   }
 
   assignTask(selectedTask, selectedUser) {
-    if (this.role === 'admin') {
-      selectedTask.assignedTo = selectedUser
+    const isAdmin = this.role === 'admin'
+
+    const isBranchManager =
+      this.role === 'branchManager' && this.branch === selectedUser.branch && this.branch === selectedTask.branch
+
+    if (!isAdmin && !isBranchManager) {
+      console.log('You do not have permission to assign this task.')
+      return false
+    }
+
+    selectedTask.assignedTo = selectedUser
+
+    if (!selectedUser.tasks.includes(selectedTask)) {
       selectedUser.tasks.push(selectedTask)
     }
-    if (this.role === 'branchManager') {
-      if (selectedUser.role === 'employee' || selectedUser.role === 'branchManager') {
-        selectedTask.assignedTo = selectedUser
-        selectedUser.tasks.push(selectedTask)
-      } else {
-        console.log('You do not have permission to assign tasks to this user.')
-      }
-    }
-    if (this.role === 'employee') {
-      console.log('You do not have permission to assign tasks to this user.')
-    }
+
+    return true
   }
 
   completeTask(selectedTask) {
     if (selectedTask.assignedTo === this) {
       selectedTask.status = 'completed'
     }
+  }
+
+  addAvailability(date, startTime, endTime, branches) {
+    const newAvailability = new Availability(this, date, startTime, endTime, branches)
+
+    this.availabilities.push(newAvailability)
+
+    return newAvailability
+  }
+
+  addAbsence(type, startDate, endDate, reason) {
+    const newAbsence = new Absence(this, type, startDate, endDate, reason)
+
+    this.absences.push(newAbsence)
+
+    return newAbsence
+  }
+}
+
+class Availability {
+  constructor(user, date, startTime, endTime, branches) {
+    this.user = user
+    this.date = date
+    this.startTime = startTime
+    this.endTime = endTime
+    this.branches = branches
+  }
+}
+
+class Absence {
+  constructor(user, type, startDate, endDate, reason) {
+    this.user = user
+    this.type = type
+    this.startDate = startDate
+    this.endDate = endDate
+    this.reason = reason
+    this.status = 'pending'
   }
 }
 
@@ -98,8 +140,6 @@ class Task {
     this.assignedTo = null
   }
 }
-
-// I need to be able to create Tasks.
 
 const branchTask = beyza.createTask(
   'Kitchen Check',
@@ -125,18 +165,21 @@ console.log(
 )
 
 //Assigning tasks to users
-beyza.assignTask(branchTask, kevin)
-admin.assignTask(branchTask2, beyza)
-kevin.assignTask(branchTask, beyza)
+const assignedByBeyza = beyza.assignTask(branchTask, kevin)
+const assignedByAdmin = admin.assignTask(branchTask2, beyza)
+const assignedByKevin = kevin.assignTask(branchTask, beyza)
+
 kevin.completeTask(branchTask)
 
-console.log(branch.users.length === 2)
-console.log(branch.users.includes(beyza))
-console.log(branch.users.includes(kevin))
+const kevinAvailability = kevin.addAvailability('2026-09-01', '08:00', '16:00', [branch])
+const beyzaAvailability = beyza.addAvailability('2026-09-01', '10:00', '18:00', [branch])
 
-console.log(branch.tasks.length === 2)
-console.log(branch.tasks.includes(branchTask))
-console.log(branch.tasks.includes(branchTask2))
+const kevinAbsence = kevin.addAbsence('vacation', '2026-09-05', '2026-09-07', 'Annual leave')
+const beyzaAbsence = beyza.addAbsence('sick_leave', '2026-09-10', '2026-09-12', 'Flu')
+
+console.log(assignedByBeyza === true)
+console.log(assignedByAdmin === true)
+console.log(assignedByKevin === false)
 
 console.log(branchTask.assignedTo === kevin)
 console.log(kevin.tasks.includes(branchTask))
@@ -144,3 +187,4 @@ console.log(branchTask.status === 'completed')
 
 console.log(branchTask2.assignedTo === beyza)
 console.log(beyza.tasks.includes(branchTask2))
+console.log(beyza.absences.includes(beyzaAbsence))

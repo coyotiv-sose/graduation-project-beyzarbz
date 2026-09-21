@@ -1,3 +1,4 @@
+const Task = require('./models/Task')
 const Branch = require('./models/Branch')
 const Absence = require('./models/Absence')
 const Availability = require('./models/Availability')
@@ -100,21 +101,6 @@ const admin = new User('Admin', 'admin', null)
 
 const beyza = admin.createUser('Beyza', 'branchManager', branch)
 const kevin = admin.createUser('Kevin', 'employee', branch)
-
-class Task {
-  constructor(title, description, startTime, endTime, priority, branch, createdBy) {
-    this.title = title
-    this.description = description
-    this.startTime = startTime
-    this.endTime = endTime
-    this.priority = priority
-    this.branch = branch
-    this.createdBy = createdBy
-
-    this.status = 'pending'
-    this.assignedTo = null
-  }
-}
 
 const branchTask = beyza.createTask(
   'Kitchen Check',

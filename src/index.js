@@ -1,3 +1,5 @@
+const Branch = require('./models/Branch')
+
 console.log('Gastro Ops')
 
 // I have three main objekts : Branches, Users , Tasks
@@ -14,14 +16,6 @@ console.log('Gastro Ops')
 //I need to be able to assign a Task to a User.
 //An Employee should be able to complete an assigned Task.
 
-class Branch {
-  constructor(name, address) {
-    this.name = name
-    this.address = address
-    this.tasks = []
-    this.users = []
-  }
-}
 const branch = new Branch('Kennys Vienna', 'Vienna Austria')
 
 class User {

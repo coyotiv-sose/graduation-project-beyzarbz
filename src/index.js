@@ -1,4 +1,6 @@
 const Branch = require('./models/Branch')
+const Absence = require('./models/Absence')
+const Availability = require('./models/Availability')
 
 console.log('Gastro Ops')
 
@@ -91,27 +93,6 @@ class User {
     this.absences.push(newAbsence)
 
     return newAbsence
-  }
-}
-
-class Availability {
-  constructor(user, date, startTime, endTime, branches) {
-    this.user = user
-    this.date = date
-    this.startTime = startTime
-    this.endTime = endTime
-    this.branches = branches
-  }
-}
-
-class Absence {
-  constructor(user, type, startDate, endDate, reason) {
-    this.user = user
-    this.type = type
-    this.startDate = startDate
-    this.endDate = endDate
-    this.reason = reason
-    this.status = 'pending'
   }
 }
 

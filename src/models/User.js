@@ -1,3 +1,4 @@
+const ROLES = require('../constants/roles')
 const Absence = require('./Absence')
 const Availability = require('./Availability')
 const Task = require('./Task')
@@ -14,7 +15,7 @@ class User {
   }
 
   createUser(name, role, branch) {
-    if (this.role === 'admin') {
+    if (this.role === ROLES.ADMIN) {
       const newUser = new User(name, role, branch)
       branch.users.push(newUser)
       return newUser
@@ -25,7 +26,7 @@ class User {
   }
 
   createTask(title, description, startTime, endTime, priority, selectedBranch) {
-    if (this.role === 'admin' || (this.role === 'branchManager' && this.branch === selectedBranch)) {
+    if (this.role === ROLES.ADMIN || (this.role === ROLES.BRANCH_MANAGER && this.branch === selectedBranch)) {
       const newTask = new Task(title, description, startTime, endTime, priority, selectedBranch, this)
       selectedBranch.tasks.push(newTask)
       return newTask
@@ -36,10 +37,10 @@ class User {
   }
 
   assignTask(selectedTask, selectedUser) {
-    const isAdmin = this.role === 'admin'
+    const isAdmin = this.role === ROLES.ADMIN
 
     const isBranchManager =
-      this.role === 'branchManager' && this.branch === selectedUser.branch && this.branch === selectedTask.branch
+      this.role === ROLES.BRANCH_MANAGER && this.branch === selectedUser.branch && this.branch === selectedTask.branch
 
     if (!isAdmin && !isBranchManager) {
       console.log('You do not have permission to assign this task.')

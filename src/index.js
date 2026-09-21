@@ -1,3 +1,4 @@
+const ROLES = require('./constants/roles')
 const Branch = require('./models/Branch')
 const User = require('./models/User')
 
@@ -7,10 +8,10 @@ console.log('Gastro Ops')
 
 const branch = new Branch('Kennys Vienna', 'Vienna Austria')
 
-const admin = new User('Admin', 'admin', null)
+const admin = new User('Admin', ROLES.ADMIN, null)
 
-const beyza = admin.createUser('Beyza', 'branchManager', branch)
-const kevin = admin.createUser('Kevin', 'employee', branch)
+const beyza = admin.createUser('Beyza', ROLES.BRANCH_MANAGER, branch)
+const kevin = admin.createUser('Kevin', ROLES.EMPLOYEE, branch)
 
 const branchTask = beyza.createTask(
   'Kitchen Check',

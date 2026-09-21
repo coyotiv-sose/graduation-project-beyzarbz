@@ -1,3 +1,4 @@
+const TASK_STATUSES = require('../constants/task-statuses')
 const ROLES = require('../constants/roles')
 const Absence = require('./Absence')
 const Availability = require('./Availability')
@@ -58,7 +59,7 @@ class User {
 
   completeTask(selectedTask) {
     if (selectedTask.assignedTo === this) {
-      selectedTask.status = 'completed'
+      selectedTask.status = TASK_STATUSES.COMPLETED
     }
   }
 

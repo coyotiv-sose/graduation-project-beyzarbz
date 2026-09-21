@@ -1,3 +1,5 @@
+const TASK_STATUSES = require('../constants/task-statuses')
+
 class Task {
   constructor(title, description, startTime, endTime, priority, branch, createdBy) {
     this.title = title
@@ -8,7 +10,7 @@ class Task {
     this.branch = branch
     this.createdBy = createdBy
 
-    this.status = 'pending'
+    this.status = TASK_STATUSES.PENDING
     this.assignedTo = null
   }
 }
